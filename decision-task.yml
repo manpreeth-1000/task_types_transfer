@@ -1,0 +1,68 @@
+flow:
+  id: 'decision-task'
+  description: 'Decide on the task to perform'
+  ttl: 10s
+  exception: 'v1.hello.exception'
+
+first.task: 'v1.decide.evenodd'
+
+tasks:
+
+  - input:
+      - 'input.path_parameter.random_no -> header.random_no'
+    process: 'v1.decide.evenodd'
+    output:
+      - 'result -> decision'
+    description: 'Make a decision for even or odd'
+    execution: decision
+    next:
+      - 'v1.even.flow'
+      - 'v1.odd.flow'
+
+  - input:
+      - 'input.path_parameter.random_no -> header.number'
+    process: 'v1.odd.flow'
+    output: []
+    description: 'Odd is chosen and we test parallel tasking'
+    execution: parallel
+    next:
+      - 'v1.odd.flow.one'
+      - 'v1.odd.flow.three'
+
+  - input:
+      - 'input.path_parameter.random_no -> header.number'
+    process: 'v1.odd.flow.one'
+    output:
+      - 'int(201) -> output.status'
+      - 'result -> output.body'
+    description: 'Odd is chosen and one is printing'
+    execution: end
+
+  - input:
+      - 'input.path_parameter.random_no -> header.number'
+    process: 'v1.odd.flow.three'
+    output:
+      - 'int(201) -> output.status'
+      - 'result -> output.body'
+    description: 'Odd is chosen and three is printing'
+    execution: end
+
+  - input:
+      - 'input.path_parameter.random_no -> header.number'
+    process: 'v1.even.flow'
+    output:
+      - 'int(201) -> output.status'
+      - 'result -> output.body'
+    description: 'Even is chosen'
+    execution: end
+
+  - input:
+      - 'error.code -> status'
+      - 'error.message -> message'
+      - 'error.stack -> stack'
+    process: 'v1.hello.exception'
+    output:
+      - 'result.status -> output.status'
+      - 'result -> output.body'
+    description: 'Just a demo exception handler'
+    execution: end

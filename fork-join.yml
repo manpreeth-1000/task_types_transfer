@@ -1,0 +1,45 @@
+flow:
+  id: 'fork-join'
+  description: 'Implement for and join'
+  ttl: 10s
+  exception: 'v1.hello.exception'
+
+first.task: 'v1.forkandjoin'
+
+tasks:
+  - input:
+      - 'input.path_parameter.firstno -> header.first_no'
+      - 'input.path_parameter.secondno -> header.second_no'
+    process: 'v1.forkandjoin'
+    output: []
+    description: 'Demonstrate fork and join'
+    execution: fork
+    next:
+      - 'v1.firstno.flow'
+      - 'v1.secondno.flow'
+    join: 'v1.join.task'
+
+  - input:
+      - 'input.path_parameter.firstno -> header.first_no'
+    process: 'v1.firstno.flow'
+    output:
+      - 'result -> model.string1'
+    description: 'First task in fork and join'
+    execution: sink
+
+  - input:
+      - 'input.path_parameter.secondno -> header.second_no'
+    process: 'v1.secondno.flow'
+    output:
+      - 'result -> model.string2'
+    description: 'Second task in fork and join'
+    execution: sink
+
+  - input:
+      - 'model.string1 -> header.one'
+      - 'model.string2 -> header.two'
+    process: 'v1.join.task'
+    output:
+      - 'result -> output.body'
+    description: 'This completes the flow'
+    execution: end

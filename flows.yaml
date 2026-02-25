@@ -1,0 +1,9 @@
+flows:
+  - 'get-profile.yml'
+  - 'create-profile.yml'
+  - 'delete-profile.yml'
+  - 'update-profile.yml'
+  - 'decision-task.yml'
+  - 'fork-join.yml'
+
+location: 'classpath:/flows/'

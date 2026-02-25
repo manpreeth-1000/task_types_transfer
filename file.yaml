@@ -1,0 +1,13 @@
+chai:
+  - name :
+      -  tradional
+    varities:
+      -  araku
+      -  madras
+      -  chikmanglur
+  - name:
+      -  modern
+    varities:
+      - black
+      - brown
+      - white
